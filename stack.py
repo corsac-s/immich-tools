@@ -120,22 +120,25 @@ def stack_assets(IMMICH_URL, API_KEY, asset_ids):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stack Immich duplicates with identical filenames (ignoring extension).")
-    parser.add_argument("--stack", required=True, action="store_true", help="Find duplicates with identical filenames and stack them")
-    parser.add_argument("--dry-run", action="store_true", help="Only print duplicates, do not stack them.")
+
+    # Require either --stack or --dry-run
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--stack", action="store_true", help="Find duplicates with identical filenames and stack them")
+    group.add_argument("--dry-run", action="store_true", help="Only print duplicates, do not stack them.")
+
     args = parser.parse_args()
 
-    if args.stack:
-        IMMICH_URL, API_KEY = load_config()
-        duplicates = get_duplicate_groups(IMMICH_URL, API_KEY)
-        dupe_pairs = filter_dupe_pairs(duplicates)
+    IMMICH_URL, API_KEY = load_config()
+    duplicates = get_duplicate_groups(IMMICH_URL, API_KEY)
+    dupe_pairs = filter_dupe_pairs(duplicates)
 
-        if dupe_pairs:
-            for pair in dupe_pairs:
-                print(f"Found pair: {pair['paths'][0]}  ↔  {pair['paths'][1]}")
-                if args.dry_run:
-                    print("   [dry-run] Would stack these.")
-                else:
-                    result = stack_assets(IMMICH_URL, API_KEY, pair["ids"])
-                    print(f"   ✅ Stacked to {result['primaryAssetId']}")
-        else:
-            print("No matching duplicates found.")
+    if dupe_pairs:
+        for pair in dupe_pairs:
+            print(f"Found pair: {pair['paths'][0]}  ↔  {pair['paths'][1]}")
+            if args.dry_run:
+                print("   [dry-run] Would stack these.")
+            else:
+                result = stack_assets(IMMICH_URL, API_KEY, pair["ids"])
+                print(f"   ✅ Stacked to {result['primaryAssetId']}")
+    else:
+        print("No matching duplicates found.")

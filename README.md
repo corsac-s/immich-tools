@@ -49,6 +49,13 @@ Immich environment variable names are `IMMICH_URL` and `IMMICH_API_KEY`.
 
 ## Usage
 
+To just show what would be stacked, without actually
+stacking, use the dry run option:
+
+```
+./stack.py --dry-run
+```
+
 To stack your identically named duplicates, just run:
 
 ```
@@ -58,9 +65,3 @@ To stack your identically named duplicates, just run:
 While the script only has one function, I didn't want to start messing with
 your Immich instance if you ran it without parameters.
 
-Add `--dry-run` to just show what would be stacked, without actually
-stacking:
-
-```
-./stack.py --stack --dry-run
-```
