@@ -18,7 +18,7 @@ filenames are equal (apart from the extension).
 
 * Click on your profile icon in the top right, then choose **Account Settings**.
 * Fold out **API Keys** and click **New API Key**.
-* Give it a useful name, like **immich-stqck**.
+* Give it a useful name, like **immich-stack**.
 * Give it **duplicate.read** and **stack.create** permissions .
 * Click **Create**. You'll be presented with a single chance to copy this API
 key to your clipboard. Put it in your INI file (see below) and/or your
