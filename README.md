@@ -1,13 +1,11 @@
-# Immich Stacker
+# Set of tools to interact with Immich photo software
 
-## Introduction
+## Origins / immich-stack
 
-While it's less common these days with everyone using their smartphones as a
-digital camera, my older albums have both the JPG and the NEF (RAW) version
-of my pictures. As Immich supports both formats, it's reporting them as
-duplicates. With this script, you can automatically stack these duplicates, if the
-filenames are equal (apart from the extension).
-
+This is heavily based on the
+[immich-stack](https://github.com/sid3windr/immich-stack) project by Tom
+Laermans. The [stack](stack.py) tool was edited to tune the stacking criteria
+to fit my needs. 
 ## Requirements
 
 * Python 3
@@ -47,7 +45,11 @@ variables.
 
 Immich environment variable names are `IMMICH_URL` and `IMMICH_API_KEY`.
 
-## Usage
+## Stack
+
+For some reasons I have multiple time the same file (same basename, same
+extensions) on different part of the filesystem, and I need to stack them in
+immich. With this tool I can automatically identify and stack them.
 
 To just show what would be stacked, without actually
 stacking, use the dry run option:
@@ -64,4 +66,3 @@ To stack your identically named duplicates, just run:
 
 While the script only has one function, I didn't want to start messing with
 your Immich instance if you ran it without parameters.
-

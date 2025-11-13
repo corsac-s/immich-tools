@@ -64,12 +64,17 @@ def get_duplicate_groups(IMMICH_URL, API_KEY):
 def filter_dupe_pairs(duplicate_groups):
     """Filter groups that have exactly 2 assets and identical filenames excluding extension."""
     results = []
+    print("duplicates: %d" % len(duplicate_groups))
     for group in duplicate_groups:
         assets = group.get("assets", [])
-        if len(assets) != 2:
-            continue
+        #if len(assets) != 2:
+        #    continue
         names = [asset.get("originalPath") or asset.get("filename") or "" for asset in assets]
         ids = [asset.get("id") for asset in assets]
+        dates = [asset.get("exifInfo").get("dateTimeOriginal") for asset in assets]
+        sizes = [asset.get("exifInfo").get("fileSizeInByte") for asset in assets]
+        models = [asset.get("exifInfo").get("model") for asset in assets]
+
 
         # Normalize to just filename
         basenames = [os.path.splitext(os.path.basename(name))[0] for name in names]
@@ -78,30 +83,34 @@ def filter_dupe_pairs(duplicate_groups):
         if not basenames[0] or not basenames[1]:
             continue
 
-        if basenames[0] != basenames[1]:
-            # different file name, ignore
-            continue
+        # same date and same camera model: same picture
+        if len(set(dates)) == 1 and len(set(models)):
+            # use the larger picture as the primary one
+            primary_index = sizes.index(max(sizes))
 
-        if exts[0] == exts[1]:
-            # same extension, ignore
-            continue
-
-        # Decide ordering so first id becomes primary:
-        # Prefer JPEG as primary if present (useful for RAW+JPG pairs).
-        primary_index = 0
-        if exts[1] in PREFERRED_PRIMARY_EXTS and exts[0] not in PREFERRED_PRIMARY_EXTS:
-            primary_index = 1
-        elif exts[0] in PREFERRED_PRIMARY_EXTS and exts[1] not in PREFERRED_PRIMARY_EXTS:
+        # same name but different extensions
+        elif len(set(basenames)) == 1 and len(set(exts)) > 1:
+            # Decide ordering so first id becomes primary:
+            # Prefer JPEG as primary if present (useful for RAW+JPG pairs).
             primary_index = 0
+            if exts[1] in PREFERRED_PRIMARY_EXTS and exts[0] not in PREFERRED_PRIMARY_EXTS:
+                primary_index = 1
+            elif exts[0] in PREFERRED_PRIMARY_EXTS and exts[1] not in PREFERRED_PRIMARY_EXTS:
+                primary_index = 0
+            else:
+                # neither or both preferred -> keep original order (assets[0] first)
+                primary_index = 0
         else:
-            # neither or both preferred -> keep original order (assets[0] first)
-            primary_index = 0
+            # no match
+            print(assets)
+            continue
 
         ordered_ids = [ids[primary_index], ids[1 - primary_index]]
         ordered_paths = [names[primary_index], names[1 - primary_index]]
 
         results.append({"ids": ordered_ids, "paths": ordered_paths, "exts": [exts[primary_index], exts[1 - primary_index]]})
 
+    print("results: %d" % len(results))
     return results
 
 
