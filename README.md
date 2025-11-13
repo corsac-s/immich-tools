@@ -66,3 +66,14 @@ To stack your identically named duplicates, just run:
 
 While the script only has one function, I didn't want to start messing with
 your Immich instance if you ran it without parameters.
+
+## Albums
+
+This tool is used to synchronize albums from a Nextcloud server, using the
+Webdav API. It's a bit hackish, the Webdav API doesn't provide everything (not
+the shared users), and it's quite slow even if not downloading the whole file
+(which could be used to get proper EXIF information for example). Still it does
+work for me.
+
+The tool is still a bit rough (no `--dry-run`) so don't use unless you
+perfectly know what it does.
